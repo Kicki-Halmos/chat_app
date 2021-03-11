@@ -7,7 +7,7 @@ router.get('/', (req,res) =>{
 }) 
 
 router.get('/dashboard', (req,res) => {
-    res.render('index.ejs')
+    res.render('dashboard.ejs')
 })
 
 router.get('/register', (req,res) => {
