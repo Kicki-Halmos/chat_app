@@ -6,12 +6,9 @@ router.get('/', (req,res) =>{
     res.render('welcome.ejs')
 }) 
 
-router.get('/dashboard', (req,res) => {
-    res.render('dashboard.ejs')
-})
 
-router.get('/register', (req,res) => {
+/*router.get('/register', (req,res) => {
     res.render('register.ejs')
-})
+})*/
 
 module.exports = router

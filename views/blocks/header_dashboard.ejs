@@ -5,29 +5,55 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
       crossorigin="anonymous"
     />
     <title>Slack</title>
   </head>
   <body class="container-fluid">
-      <div class="col-md-12">
-          <div class="row">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                <li><a class="dropdown-item" href="/users/logout">Logout</a></li>
+              
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="col-md-12">
+      <div class="row">
         <div class="col-2">
-            <h2>Welcome to slack</h2>
+          <h4>Welcome <p id="user"><%= user.name %></p></h4>
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link active" href="/dashboard/frontend"># frontend</a>
+              <a class="nav-link active" href="/dashboard/frontend"
+                ># frontend</a
+              >
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/dashboard/backend"># backend</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/dashboard/databasteknik"># databasteknik</a>
+              <a class="nav-link" href="/dashboard/databasteknik"
+                ># databasteknik</a
+              >
             </li>
           </ul>
         </div>
-      
-
+       
+    
+ 

@@ -1,11 +1,23 @@
+document.addEventListener('DOMContentLoaded', (e) =>{
+    //e.preventDefault()
 const socket = io();
 
 let form = document.getElementById('form');
 let input = document.getElementById('input');
 let room_name = input.name
+let username = document.getElementById('user').innerText
+let input_username = username.name
+//console.log(input.name)
+console.log(username)
+//console.log(input)
+
+/*socket.emit("dashboard", {
+    name: username
+})*/
 
 socket.emit("join room", {
-    room_name: room_name
+    room_name: room_name,
+    name: username
 })
 
 
@@ -31,3 +43,33 @@ socket.on('chat message', message => {
    item_message.appendChild(item);
     
 })
+
+/*const loadUser = () => {
+    for(user of userlist.user){
+    let item = document.createElement('li')
+    item.textContent = user;
+    console.log(item)
+
+   let item_user = document.getElementById('online_users')
+   item_user.appendChild(item);
+    }
+    console.log(users)
+}
+
+loadUser()*/
+
+   
+})
+
+ /*fetch(`/dashboard/${room_name}`)
+        .then(res => res.json())
+           
+        .then(users => {
+            for(user of users) {
+            let item = document.createElement('li')
+            item.textContent = user.name;
+            let item_user = document.getElementById('online_users')
+            item_user.appendChild(item);
+            
+            }
+        })*/
