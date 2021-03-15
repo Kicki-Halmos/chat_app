@@ -49,15 +49,38 @@ app.use('/', require('./routes/index'))
 app.use('/users', require('./routes/users'))
 app.use('/dashboard', require('./routes/dashboard'))
 
-let users = []
+//let users = []
 //socket
 io.on("connection", (socket) => {
     socket.on("dashboard", async data => {
-         users.push(data.name)
-        //console.log('connect' + users)
-        io.emit('dashboard', users)
+        console.log(data.id)
+        let userlist = []
+        await User.findByIdAndUpdate(data.id, {loggedin: true}, (error, result) => {
+            if(error){
+                console.log(error)
+            }
+            else{
+                console.log('this is the result: ' + result)
+            }
+        })
         
+        await User.find((error, result) => {
+            if(error){
+                console.log(error)
+            }
+            else {
+                for(item of result){
+                    if (item.loggedin === true){
+                        userlist.push(item.name)
+                       
+                    }
+                }
+                io.emit('dashboard', userlist)
+            }
+                               
     })
+ 
+})
   
 
     socket.on("join room", async data => {
@@ -78,8 +101,15 @@ io.on("connection", (socket) => {
 })
 
     
-    socket.on('disconnect', () =>{
-       users = []
+    socket.on('disconnect', async (data) =>{
+        await User.findByIdAndUpdate(data.id, {loggedin: false}, (error, result) => {
+            if(error){
+                console.log(error)
+            }
+            else{
+                //console.log(result)
+            }
+        })
       
     })
 })

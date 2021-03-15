@@ -12,7 +12,7 @@ const router = express.Router();
 router.get("/", ensureAuthenticated, async (req, res) => {
     let userlist = []
     let id = req.user._id
-    await User.findByIdAndUpdate(id, {loggedin: true}, (error, result) => {
+    /*await User.findByIdAndUpdate(id, {loggedin: true}, (error, result) => {
         if(error){
             console.log(error)
         }
@@ -20,6 +20,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
             console.log(result)
         }
     })
+    console.log(req.user)
     await User.find((error, result) => {
         if(error){
             console.log(error)
@@ -30,11 +31,8 @@ router.get("/", ensureAuthenticated, async (req, res) => {
                     userlist.push(item.name)
                 }
             }
-            res.render('dashboard.ejs', {user: req.user, users: userlist})
-        }
-    })
-    
-  
+            console.log('userlist: ' + userlist)*/
+            res.render('dashboard.ejs', {user: req.user})
 })
 
 router.get("/:name", ensureAuthenticated, async (req, res) => {
@@ -52,7 +50,7 @@ let userlist = []
             }
         }
 
-  res.render("rooms.ejs", { channelname: room_name, user: req.user, users: userlist });
+  res.render("rooms.ejs", { channelname: room_name, user: req.user});
       }
   })
 });

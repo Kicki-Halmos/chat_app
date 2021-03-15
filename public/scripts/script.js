@@ -5,15 +5,16 @@ const socket = io();
 let form = document.getElementById('form');
 let input = document.getElementById('input');
 let room_name = input.name
+let id = document.getElementById('user').title
 let username = document.getElementById('user').innerText
-let input_username = username.name
-//console.log(input.name)
-console.log(username)
-//console.log(input)
+//console.log(username)
+//let input_username = username.id_ref
+//console.log(input_username)
+console.log(room_name)
 
-/*socket.emit("dashboard", {
-    name: username
-})*/
+socket.emit("dashboard", {
+    id: id
+})
 
 socket.emit("join room", {
     room_name: room_name,
@@ -44,32 +45,23 @@ socket.on('chat message', message => {
     
 })
 
-/*const loadUser = () => {
-    for(user of userlist.user){
-    let item = document.createElement('li')
-    item.textContent = user;
-    console.log(item)
+socket.on('dashboard', async userlist => {
+    console.log(userlist)
+    for await (user of userlist){
+        let item = document.createElement('li')
+        item.textContent = user;
+        
+        
+       let item_user = document.getElementById('online_users')
+       item_user.appendChild(item);
+        }
+       
 
-   let item_user = document.getElementById('online_users')
-   item_user.appendChild(item);
-    }
-    console.log(users)
-}
+})
 
-loadUser()*/
+
 
    
 })
 
- /*fetch(`/dashboard/${room_name}`)
-        .then(res => res.json())
-           
-        .then(users => {
-            for(user of users) {
-            let item = document.createElement('li')
-            item.textContent = user.name;
-            let item_user = document.getElementById('online_users')
-            item_user.appendChild(item);
-            
-            }
-        })*/
+ 
