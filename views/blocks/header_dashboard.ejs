@@ -38,21 +38,39 @@
       <div class="row">
         <div class="col-2">
           <h4>Welcome <p id="user" title="<%= user._id%>" > <%= user.name %> </p></h4>
+
           <ul class="nav flex-column">
+            <% for (channel of channels) {%>
             <li class="nav-item">
-              <a class="nav-link active" href="/dashboard/frontend"
-                ># frontend</a
-              >
+              <a class="nav-link active" href="/dashboard/<%=channel%>"
+                ># <%=channel%></a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/dashboard/backend"># backend</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/dashboard/databasteknik"
-                ># databasteknik</a
-              >
-            </li>
+          <%}%>
+           
+           <li class="nav-item"> <button type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#exampleModal"># new channel</button></li>
           </ul>
+
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">New Channel</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form action="/dashboard" method="POST">
+                    <label for="channelname">Channel name</label>
+                    <input type="text" name="channelname">
+                    <div class="modal-footer">
+                      
+                      <button type="submit" class="btn btn-primary" >Save</button>
+                    </div>
+                  </form>
+                </div>
+               
+              </div>
+            </div>
+          </div>
         </div>
        
     

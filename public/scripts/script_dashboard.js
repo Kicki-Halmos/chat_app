@@ -6,7 +6,7 @@ socket.emit("dashboard", {
     id: id
 })
 
-socket.on('dashboard', async userlist => {
+/*socket.on('dashboard', async userlist => {
     console.log(userlist)
     for await (user of userlist){
         let item = document.createElement('li')
@@ -18,4 +18,4 @@ socket.on('dashboard', async userlist => {
         }
         
 
-})
+})*/

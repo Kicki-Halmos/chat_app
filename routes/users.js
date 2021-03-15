@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const User = require("../models/user");
 
-//const getUsers = require('../api/users')
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const passport = require("passport");
@@ -10,15 +9,17 @@ const { ensureAuthenticated } = require("../config/auth");
 
 app.use(express.json());
 
-//login
+//login page
 router.get("/login", (req, res) => {
   res.render("login.ejs");
 });
 
+//register page
 router.get("/register", (req, res) => {
   res.render("register.ejs");
 });
 
+//logout
 router.get("/logout", ensureAuthenticated, (req, res) => {
     let user = req.user
     console.log(user)
@@ -34,6 +35,7 @@ router.get("/logout", ensureAuthenticated, (req, res) => {
 
 });
 
+//login
 router.post("/login", (req, res, next) => {
   passport.authenticate("local", {
     successRedirect: "/dashboard",
@@ -42,6 +44,7 @@ router.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
+//register
 router.post("/register", (req, res) => {
   const { name, email, password } = req.body;
 

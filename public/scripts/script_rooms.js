@@ -18,7 +18,7 @@ socket.emit("dashboard", {
 
 socket.emit("join room", {
     room_name: room_name,
-    name: username
+    id: id
 })
 
 
@@ -34,18 +34,20 @@ form.addEventListener('submit', e => {
     input.value = '';
 })
 
-socket.on('chat message', message => {
+socket.on('chat message', (message, sender) => {
     console.log(message);
-    
-    let item = document.createElement('li')
-    item.textContent = message;
+    let item_sender = document.createElement('strong')
+    item_sender.textContent = sender
+    let item_message = document.createElement('p')
+    item_message.textContent = message;
 
-   let item_message = document.getElementById('messages')
-   item_message.appendChild(item);
+   let message_thread = document.getElementById('messages')
+   message_thread.appendChild(item_sender)
+   message_thread.appendChild(item_message)
     
 })
 
-socket.on('dashboard', async userlist => {
+/*socket.on('dashboard', async userlist => {
     console.log(userlist)
     for await (user of userlist){
         let item = document.createElement('li')
@@ -56,8 +58,8 @@ socket.on('dashboard', async userlist => {
        item_user.appendChild(item);
         }
        
-
-})
+        userlist = [];
+})*/
 
 
 
