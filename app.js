@@ -9,6 +9,7 @@ const session = require("express-session");
 const passport = require("passport");
 const User = require("./models/user");
 const Room = require("./models/room");
+const PrivateChat = require("./models/private_chat");
 require("./config/passport")(passport);
 
 //db
@@ -56,31 +57,9 @@ app.use("/dashboard", require("./routes/dashboard"));
 //socket
 
 io.on("connection", (socket) => {
-  console.log('id ' + socket.id)
-  console.log('rooms ' + socket.rooms)
-  /*socket.on("dashboard", async (data) => {
-    
-    
-    await User.findByIdAndUpdate(
-      data.id,
-      { loggedin: true },
-      (error, result) => {
-        if (error) {
-          console.log(error);
-        } else {
-          //console.log('this is the result: ' + result)
-        }
-      }
-    );
-  });*/
+ 
 
-  socket.on('private chat', async (anotherSocketId) => {
-    socket.on('chat message', (message)=> {
-      socket.to(anotherSocketId).emit("private chat", socket.id, message)
-    })
-    
-  })
-
+  
   socket.on("join room", async (data) => {
     //console.log('rooms ' + socket.rooms)
     const room_name = await data.room_name;
@@ -114,7 +93,43 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("disconnect", (data) => {});
+  /*socket.on("private chat", async (data) => {
+    //console.log('rooms ' + socket.rooms)
+    const room_name = await data.private_room;
+    console.log(room_name)
+
+    //find user who connects to the room
+    const user = await User.findById(data.id).exec();
+   
+    await socket.join(room_name);
+    await socket.on("private chat message", (message) => {
+      const user_message = message;
+
+      PrivateChat.findOneAndUpdate(
+        { name: room_name },
+        {
+          $push: {
+            messages: [{ message_sender: user._id, message: user_message }],
+          },
+        },
+        { useFindAndModify: false },
+        (error, result) => {
+          if (error) {
+            console.log(error);
+          }
+          console.log(result);
+          const sender = user.name;
+          io.to(room_name).emit("private chat message", message, sender);
+         
+        }
+      );
+    });
+  });*/
+
+  socket.on("disconnect", (data) => {
+    console.log(data)
+  });
+  
 });
 
 server.listen(3000);

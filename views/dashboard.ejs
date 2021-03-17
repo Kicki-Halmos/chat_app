@@ -9,6 +9,7 @@
           <% for (user of userlist){ %>
            <li class="nav-item">
              <form action="/dashboard" method="POST">
+              <input type="hidden" name="name" value="<%=user.name%>">
               <input type="hidden" name="id" value="<%=user.id%>">
              <button type="submit" class="nav-link"><%=user.name%></button>
             </form>

@@ -1,0 +1,22 @@
+<%- include('blocks/header_dashboard.ejs'); -%>
+<div class= "col-8">
+<strong> #<%= channelname %></strong>
+<div id="messages_private">
+    <% for (message of messages) { %>
+        <div title="<%=message._id%>">
+        <strong><%= message.message_sender%></strong>
+        <p><%= message.message%></p>
+    </div>
+   <% } %>
+</div>
+</div>
+<div class="col-2">
+    <strong>users</strong>
+    <ul class="nav flex-column" id="online_users">
+        <% for (user of userlist){ %>
+         <li class="nav-item"><a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#dmModal"><%=user.name%></a></li> 
+         <% } %>
+      </ul>
+</div>
+
+<%- include('blocks/footer_private.ejs'); -%>

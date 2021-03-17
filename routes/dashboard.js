@@ -53,6 +53,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
 router.post("/", ensureAuthenticated, (req, res) => {
   console.log('req.body ' + req.body.id)
   console.log('req.user.id ' + req.user.id)
+  let dm_name = req.user.name + '-' + req.body.name;
 
   if (req.body.channelname) {
     const room = new Room({
@@ -69,13 +70,14 @@ router.post("/", ensureAuthenticated, (req, res) => {
 
     if (!chat.length > 0) {
       const privateChat = new PrivateChat({
+        name: dm_name,
         members: [req.body.id, req.user.id],
       });
       privateChat
         .save()
         .then((value) => {})
         .catch((error) => console.log(error));
-      res.redirect("/dashboard/dm");
+      res.redirect('/dashboard');
     } else {
       PrivateChat.find((error, result) => {
         if (error) {
@@ -83,13 +85,13 @@ router.post("/", ensureAuthenticated, (req, res) => {
         } else {
           for (item of result) {
             if (item.members.includes(req.body && req.user.id)) {
-              res.redirect("dashboard/dm");
+              res.redirect("dashboard/d");
             } else {
               privateChat
                 .save()
                 .then((value) => {})
                 .catch((error) => console.log(error));
-              res.redirect("/dashboard/dm", req.body);
+              res.redirect("/dashboard/dm/:", req.body);
             }
           }
         }
@@ -98,15 +100,15 @@ router.post("/", ensureAuthenticated, (req, res) => {
   }
 });
 
-router.get("/dm", ensureAuthenticated, async (req, res) => {
+router.get("/dm/:name", ensureAuthenticated, async (req, res) => { 
   let userlist = [];
   let db_messages = [];
   let channels = [];
   let dm = [];
   let id = req.user._id;
-  let room_name = req.params.name;
+  let dm_name = req.params.name;
 
-  PrivateChat.findOne({ name: room_name })
+  PrivateChat.findOne({ name: dm_name })
     .populate({
       path: "messages",
       populate: { path: "message_sender", model: "User" },
@@ -115,6 +117,7 @@ router.get("/dm", ensureAuthenticated, async (req, res) => {
       if (error) {
         return HandleError(error);
       }
+      //console.log(result)
       for (item of result.messages) {
         let message = {
           _id: item._id,
@@ -155,8 +158,8 @@ router.get("/dm", ensureAuthenticated, async (req, res) => {
         dm.push(item.name);
       }
 
-      res.render("rooms.ejs", {
-        channelname: room_name,
+      res.render("private_room.ejs", {
+        channelname: dm_name,
         user: req.user,
         channels: channels,
         userlist: userlist,

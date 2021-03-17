@@ -5,6 +5,9 @@ const socket = io();
 let form = document.getElementById('form');
 let input = document.getElementById('input');
 let room_name = input.name
+let private_form = document.getElementById('private_form')
+let private_input = document.getElementById('input_private')
+let private_room = private_input.name
 let id = document.getElementById('user').title
 //let private_id = CMzdMluZIQ0orLKnAAAL
 //let username = document.getElementById('user').innerText
@@ -15,11 +18,12 @@ let id = document.getElementById('user').title
     id: id
 })*/
 socket.on("connect", () => {
-    console.log('id_client ' + socket.id)
+    //console.log('id_client ' + socket.id)
 })
-socket.emit('private chat', {
-    anotherSocketId: socket.id
-})
+/*socket.emit('private chat', {
+    private_room: private_room,
+    id: id
+})*/
 
 socket.emit("join room", {
     room_name: room_name,
@@ -34,10 +38,25 @@ form.addEventListener('submit', e => {
     if(input.value) {
         let message = input.value
         socket.emit('chat message', message);
+        
     }
 
     input.value = '';
 })
+
+private_form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    if(private_input.value) {
+        let message = private_input.value
+        socket.emit('private chat message', message);
+        
+    }
+
+    pivate_input.value = '';
+
+})
+        
 
 socket.on('chat message', (message, sender) => {
     //console.log(message);
@@ -47,6 +66,19 @@ socket.on('chat message', (message, sender) => {
     item_message.textContent = message;
 
    let message_thread = document.getElementById('messages')
+   message_thread.appendChild(item_sender)
+   message_thread.appendChild(item_message)
+    
+})
+
+socket.on('private chat message', (message, sender) => {
+    //console.log(message);
+    let item_sender = document.createElement('strong')
+    item_sender.textContent = sender
+    let item_message = document.createElement('p')
+    item_message.textContent = message;
+
+   let message_thread = document.getElementById('messages_private')
    message_thread.appendChild(item_sender)
    message_thread.appendChild(item_message)
     
@@ -65,7 +97,7 @@ socket.on('chat message', (message, sender) => {
        
         userlist = [];
 })*/
-    socket.on('private chat', socket.id, message => {
+    /*socket.on('private chat', socket.id, message => {
         let item_sender = document.createElement('strong')
         item_sender.textContent = sender
         let item_message = document.createElement('p')
@@ -74,7 +106,7 @@ socket.on('chat message', (message, sender) => {
        let message_thread = document.getElementById('messages')
        message_thread.appendChild(item_sender)
        message_thread.appendChild(item_message)
-    } )
+    } )*/
 
 })
    
