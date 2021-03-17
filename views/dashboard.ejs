@@ -5,13 +5,24 @@
     </div>
     <div class="col-2">
         <strong>users</strong>
-        <ul id="online_users">
+        <ul class="nav flex-column" id="online_users">
           <% for (user of userlist){ %>
-           <li><%=user%></li>
+           <li class="nav-item">
+             <form action="/dashboard" method="POST">
+              <input type="hidden" name="id" value="<%=user.id%>">
+             <button type="submit" class="nav-link"><%=user.name%></button>
+            </form>
+          </li> 
            <% } %>
         </ul>
       
     </div>
+
+  
+  
+  
+
+
      
   
   <%- include('blocks/footer.ejs'); -%>

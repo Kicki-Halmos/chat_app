@@ -3,115 +3,229 @@ const app = express();
 const { ensureAuthenticated } = require("../config/auth");
 const Room = require("../models/room");
 const User = require("../models/user");
+const PrivateChat = require("../models/private_chat");
 const router = express.Router();
 
-
-
-
 router.get("/", ensureAuthenticated, async (req, res) => {
-  let userlist = []
-  let id = req.user._id
-   
-    
-    await User.find((error, result) => {
-        if(error){
-            console.log(error)
+  let userlist = [];
+  let id = req.user._id;
+
+  await User.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+        if (item.loggedin === true) {
+          userlist.push({ name: item.name, id: item._id });
         }
-        else {
-            for(item of result){
-                if (item.loggedin === true){
-                    userlist.push(item.name)
-                }
-            }
-            //console.log('userlist: ' + userlist)
-          }
-        })
-  let channels = []
-  await Room.find((error,result) => {
-    if(error){
-      console.log(error)
+      }
+      //console.log('userlist: ' + userlist)
     }
-    else{
-    for(item of result)
-    channels.push(item.name)
+  });
+  let channels = [];
+  await Room.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+        channels.push(item.name);
+      }
     }
-    res.render("dashboard.ejs", { user: req.user, channels: channels, userlist:userlist });
-  })
- 
+  });
+  let dm = [];
+  await PrivateChat.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+        dm.push(item.name);
+      }
+      res.render("dashboard.ejs", {
+        user: req.user,
+        channels: channels,
+        userlist: userlist,
+        dm: dm,
+      });
+    }
+  });
 });
 
-router.post('/', (req,res) => {
-  console.log(req.body)
-  const room = new Room({
-    name: req.body.channelname
-  })
+router.post("/", ensureAuthenticated, (req, res) => {
+  console.log('req.body ' + req.body.id)
+  console.log('req.user.id ' + req.user.id)
 
-  room.save()
-        .then((value) => {
-          
-        })
+  if (req.body.channelname) {
+    const room = new Room({
+      name: req.body.channelname,
+    });
+
+    room
+      .save()
+      .then((value) => {})
+      .catch((error) => console.log(error));
+    res.redirect("/");
+  } else {
+    const chat = PrivateChat.find().exec()
+
+    if (!chat.length > 0) {
+      const privateChat = new PrivateChat({
+        members: [req.body.id, req.user.id],
+      });
+      privateChat
+        .save()
+        .then((value) => {})
         .catch((error) => console.log(error));
-    
-
-  res.redirect('/dashboard')
-})
-
-router.get("/:name", ensureAuthenticated, async (req, res) => {
-  
-  let userlist = []
-  let db_messages = []
-  let channels = []
-  let id = req.user._id 
-  let room_name = req.params.name;
-  await User.find((error,result)=>{
-      if (error){
-          console.log(error)
-      }
-      else{
-        for(item of result){
-            if (item.loggedin === true){
-                userlist.push(item.name)
+      res.redirect("/dashboard/dm");
+    } else {
+      PrivateChat.find((error, result) => {
+        if (error) {
+          console.log(error);
+        } else {
+          for (item of result) {
+            if (item.members.includes(req.body && req.user.id)) {
+              res.redirect("dashboard/dm");
+            } else {
+              privateChat
+                .save()
+                .then((value) => {})
+                .catch((error) => console.log(error));
+              res.redirect("/dashboard/dm", req.body);
             }
+          }
         }
-      }
-      })
-
- 
-  await Room.find((error,result) => {
-    if(error){
-      console.log(error)
-    }
-    else{
-    for(item of result){
-    channels.push(item.name)
+      });
     }
   }
-})
+});
 
-  Room.findOne({name: room_name})
-  .populate({path:'messages', populate: {path: 'message_sender', model: 'User'} })
-  .exec(function (error, result) {
-    if(error){
-      return HandleError(error);
-    }
-    for(item of result.messages){
-      let message = {
-        _id: item._id,
-        message_sender: item.message_sender.name,
-        message: item.message
+router.get("/dm", ensureAuthenticated, async (req, res) => {
+  let userlist = [];
+  let db_messages = [];
+  let channels = [];
+  let dm = [];
+  let id = req.user._id;
+  let room_name = req.params.name;
 
+  PrivateChat.findOne({ name: room_name })
+    .populate({
+      path: "messages",
+      populate: { path: "message_sender", model: "User" },
+    })
+    .exec(function (error, result) {
+      if (error) {
+        return HandleError(error);
       }
-      db_messages.push(message)
+      for (item of result.messages) {
+        let message = {
+          _id: item._id,
+          message_sender: item.message_sender.name,
+          message: item.message,
+        };
+        db_messages.push(message);
+      }
+    });
+
+  await User.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+        if (item.loggedin === true) {
+          userlist.push({ name: item.name, id: item._id });
+        }
+      }
     }
-    console.log(result.messages)
-    res.render("rooms.ejs", { channelname: room_name, user: req.user, channels: channels, userlist:userlist, messages: db_messages });
-  
-  })
-})
-  
+  });
 
+  await Room.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+        channels.push(item.name);
+      }
+    }
+  });
 
-  
+  await PrivateChat.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+        dm.push(item.name);
+      }
+
+      res.render("rooms.ejs", {
+        channelname: room_name,
+        user: req.user,
+        channels: channels,
+        userlist: userlist,
+        messages: db_messages,
+        dm: dm,
+      });
+    }
+  });
+});
+
+router.get("/:name", ensureAuthenticated, async (req, res) => {
+  let userlist = [];
+  let db_messages = [];
+  let channels = [];
+  let dm = [];
+  let id = req.user._id;
+  let room_name = req.params.name;
+
+  Room.findOne({ name: room_name })
+    .populate({
+      path: "messages",
+      populate: { path: "message_sender", model: "User" },
+    })
+    .exec(function (error, result) {
+      if (error) {
+        return HandleError(error);
+      }
+      for (item of result.messages) {
+        let message = {
+          _id: item._id,
+          message_sender: item.message_sender.name,
+          message: item.message,
+        };
+        db_messages.push(message);
+      }
+    });
+
+  await User.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+        if (item.loggedin === true) {
+          userlist.push({ name: item.name, id: item._id });
+        }
+      }
+    }
+  });
+
+  await Room.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+        channels.push(item.name);
+      }
+
+      res.render("rooms.ejs", {
+        channelname: room_name,
+        user: req.user,
+        channels: channels,
+        userlist: userlist,
+        messages: db_messages,
+        dm: dm,
+      });
+    }
+  });
+});
+
 
 
 module.exports = router;

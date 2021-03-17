@@ -54,10 +54,12 @@ app.use("/users", require("./routes/users"));
 app.use("/dashboard", require("./routes/dashboard"));
 
 //socket
-let message_id = 1;
+
 io.on("connection", (socket) => {
-  socket.on("dashboard", async (data) => {
-    //console.log(data.id);
+  console.log('id ' + socket.id)
+  console.log('rooms ' + socket.rooms)
+  /*socket.on("dashboard", async (data) => {
+    
     
     await User.findByIdAndUpdate(
       data.id,
@@ -70,51 +72,49 @@ io.on("connection", (socket) => {
         }
       }
     );
-  });
+  });*/
 
-  
-  socket.on("join room", async (data) => {
-    const room_name = await data.room_name;
-    const name = await data.name;
-    const user = await User.findById(data.id).exec();
-    await socket.join(room_name);
-
-    await socket.on("chat message",  (message) => {
-     
-      
-      const user_message = message
-      
-      Room.findOneAndUpdate({name: room_name}, {$push: {messages: [{ message_sender: user._id, message:user_message}]}}, {useFindAndModify: false}, (error, result) => {
-        if(error){
-          console.log(error)
-        }
-        console.log(result)
-        const sender = user.name
-        io.to(room_name).emit("chat message",message, sender);
-        message_id += 1
-      } )
-
- 
-  });
-
- 
+  socket.on('private chat', async (anotherSocketId) => {
+    socket.on('chat message', (message)=> {
+      socket.to(anotherSocketId).emit("private chat", socket.id, message)
+    })
     
- 
+  })
+
+  socket.on("join room", async (data) => {
+    //console.log('rooms ' + socket.rooms)
+    const room_name = await data.room_name;
+   
+
+    //find user who connects to the room
+    const user = await User.findById(data.id).exec();
+
+    await socket.join(room_name);
+    await socket.on("chat message", (message) => {
+      const user_message = message;
+
+      Room.findOneAndUpdate(
+        { name: room_name },
+        {
+          $push: {
+            messages: [{ message_sender: user._id, message: user_message }],
+          },
+        },
+        { useFindAndModify: false },
+        (error, result) => {
+          if (error) {
+            console.log(error);
+          }
+          console.log(result);
+          const sender = user.name;
+          io.to(room_name).emit("chat message", message, sender);
+         
+        }
+      );
+    });
   });
 
-  socket.on("disconnect", async (data) => {
-    await User.findByIdAndUpdate(
-      data.id,
-      { loggedin: false },
-      (error, result) => {
-        if (error) {
-          console.log(error);
-        } else {
-          //console.log(result)
-        }
-      }
-    );
-  });
+  socket.on("disconnect", (data) => {});
 });
 
 server.listen(3000);

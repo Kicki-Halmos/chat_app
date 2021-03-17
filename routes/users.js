@@ -11,6 +11,7 @@ app.use(express.json());
 
 //login page
 router.get("/login", (req, res) => {
+  
   res.render("login.ejs");
 });
 

@@ -1,19 +1,24 @@
 document.addEventListener('DOMContentLoaded', (e) =>{
-    //e.preventDefault()
+   
 const socket = io();
 
 let form = document.getElementById('form');
 let input = document.getElementById('input');
 let room_name = input.name
 let id = document.getElementById('user').title
-let username = document.getElementById('user').innerText
-//console.log(username)
-//let input_username = username.id_ref
-//console.log(input_username)
-console.log(room_name)
+//let private_id = CMzdMluZIQ0orLKnAAAL
+//let username = document.getElementById('user').innerText
 
-socket.emit("dashboard", {
+
+
+/*socket.emit("dashboard", {
     id: id
+})*/
+socket.on("connect", () => {
+    console.log('id_client ' + socket.id)
+})
+socket.emit('private chat', {
+    anotherSocketId: socket.id
 })
 
 socket.emit("join room", {
@@ -35,7 +40,7 @@ form.addEventListener('submit', e => {
 })
 
 socket.on('chat message', (message, sender) => {
-    console.log(message);
+    //console.log(message);
     let item_sender = document.createElement('strong')
     item_sender.textContent = sender
     let item_message = document.createElement('p')
@@ -60,10 +65,19 @@ socket.on('chat message', (message, sender) => {
        
         userlist = [];
 })*/
+    socket.on('private chat', socket.id, message => {
+        let item_sender = document.createElement('strong')
+        item_sender.textContent = sender
+        let item_message = document.createElement('p')
+        item_message.textContent = message;
+    
+       let message_thread = document.getElementById('messages')
+       message_thread.appendChild(item_sender)
+       message_thread.appendChild(item_message)
+    } )
 
-
-
-   
 })
+   
+
 
  
