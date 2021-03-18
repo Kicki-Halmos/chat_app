@@ -1,22 +1,36 @@
 <%- include('blocks/header_dashboard.ejs'); -%>
 <div class= "col-8">
-<strong> #<%= channelname %></strong>
+<strong> #<%= channelname %></strong> <br><br>
 <div id="messages">
     <% for (message of messages) { %>
-        <div title="<%=message._id%>">
-        <strong><%= message.message_sender%></strong>
-        <p><%= message.message%></p>
-    </div>
+        <div class="card mb-3 border-0 shadow-sm" style="max-width: 540px;"title="<%=message._id%>">
+            <div class="row g-0">
+                <div class="col-2">
+                    <img 
+                    class="rounded-circle" 
+                    style="width: 75px;
+                    height: 75px;
+                    object-fit: cover;" 
+                    src="<%= message.file_path%> " alt=""> 
+                </div>
+                <div class="col-10"> 
+                    <div class="card-body">
+                        <strong class="card-title"><%= message.message_sender%></strong>
+                             <p class="card-text"><%= message.message%></p>
+                     </div>  
+                </div>   
+            </div>
+        </div>
    <% } %>
 </div>
 </div>
-<div class="col-2">
+<!---<div class="col-2">
     <strong>users</strong>
     <ul id="online_users">
-        <% for (user of userlist){ %>
-            <li><%=user%></li>
-            <% } %>
+        <%// for (user of userlist){ %>
+            <li><%=//user%></li>
+            <% //} %>
     </ul>
-</div>
+</div>--->
 
 <%- include('blocks/footer_rooms.ejs'); -%>

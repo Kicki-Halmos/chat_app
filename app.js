@@ -99,7 +99,8 @@ io.on("connection", (socket) => {
         }
         //console.log(result)
         const sender = user.name
-        io.to(room_name).emit("chat message",message, sender);
+        const profile_pic = user.profile_pic
+        io.to(room_name).emit("chat message",message, sender, profile_pic);
        
       } )
 

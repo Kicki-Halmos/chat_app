@@ -34,20 +34,41 @@ form.addEventListener('submit', e => {
     input.value = '';
 })
 
-socket.on('chat message', (message, sender) => {
+socket.on('chat message', (message, sender, profile_pic) => {
     console.log(message);
     let item_sender = document.createElement('strong')
+    item_sender.setAttribute('class', 'card-title')
     item_sender.textContent = sender
     let item_message = document.createElement('p')
-    //let image = document.createElement('img')
-    //image.setAttribute("src",`./img.${id}`)
-    //image.setAttribute("style", "width: 75px;")
+    item_message.setAttribute('class','card-text')
     item_message.textContent = message;
+    let image = document.createElement('img')
+    image.setAttribute("src",'.' + profile_pic)
+    image.setAttribute("style", "width: 75px", "height: 75px;", "object-fit: cover;")
+    image.setAttribute("class", "rounded-circle")
+    let messages = document.getElementById('messages')
+    let div_card = document.createElement('div')
+    div_card.setAttribute('class', "card mb-3 border-0 shadow-sm")
+    div_card.setAttribute('style', "max-width: 540px;")
+    let div_row = document.createElement('div')
+    div_row.setAttribute('class', "row g-0")
+    let div_col2 = document.createElement('div')
+    div_col2.setAttribute('class', 'col-2')
+    let div_col10 = document.createElement('div')
+    div_col10.setAttribute('class', 'col-10')
+    let div_cardbody = document.createElement('div')
+    div_cardbody.setAttribute('class', 'card-body')
 
-   let message_thread = document.getElementById('messages')
-   //message_thread.appendChild(image)
-   message_thread.appendChild(item_sender)
-   message_thread.appendChild(item_message)
+    messages.appendChild(div_card)
+    div_card.appendChild(div_row)
+    div_row.appendChild(div_col2)
+    div_row.appendChild(div_col10)
+    div_col2.appendChild(image)
+    div_col10.appendChild(div_cardbody)
+    div_cardbody.appendChild(item_sender)
+    div_cardbody.appendChild(item_message)
+
+ 
     
 })
 

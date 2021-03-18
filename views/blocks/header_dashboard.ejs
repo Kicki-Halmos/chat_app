@@ -39,7 +39,12 @@
         <div class="col-2">
           <div>
           <h4>Welcome <p id="user" title="<%= user._id%>" > <%= user.name %> </p></h4>
-          <img style="width: 100px; border-radius: 50%; " src="<%=profile_pic%>" alt=""> <br> <br>
+          <img
+          style=
+          "width: 100px;
+          height: 100px;
+          object-fit: cover;"  class="rounded-circle" 
+          src="<%=profile_pic%>" alt=""> <br> <br>
           <form
 action="/dashboard/upload-profile-pic"
 method="POST"
