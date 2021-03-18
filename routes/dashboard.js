@@ -130,6 +130,9 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
     if(error){
       return HandleError(error);
     }
+
+    else{
+      console.log(result)
     for(item of result.messages){
       let message = {
         _id: item._id,
@@ -141,7 +144,7 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
     }
     console.log('sista ' + file_path)
     res.render("rooms.ejs", { channelname: room_name, user: req.user, channels: channels, userlist:userlist, messages: db_messages, profile_pic: file_path });
-  
+  }
   })
 })
   

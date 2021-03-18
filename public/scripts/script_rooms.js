@@ -39,9 +39,13 @@ socket.on('chat message', (message, sender) => {
     let item_sender = document.createElement('strong')
     item_sender.textContent = sender
     let item_message = document.createElement('p')
+    let image = document.createElement('img')
+    image.setAttribute("src",`./img.${id}`)
+    image.setAttribute("style","borderradius: 50%; width: 50px;")
     item_message.textContent = message;
 
    let message_thread = document.getElementById('messages')
+   //message_thread.appendChild(image)
    message_thread.appendChild(item_sender)
    message_thread.appendChild(item_message)
     
