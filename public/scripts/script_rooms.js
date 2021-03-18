@@ -7,6 +7,8 @@ let input = document.getElementById('input');
 let room_name = input.name
 let id = document.getElementById('user').title
 let username = document.getElementById('user').innerText
+let messages = document.getElementById('messages')
+messages.scrollIntoView({behavior: "smooth"});
 //console.log(username)
 //let input_username = username.id_ref
 //console.log(input_username)
@@ -47,6 +49,7 @@ socket.on('chat message', (message, sender, profile_pic) => {
     image.setAttribute("style", "width: 75px", "height: 75px;", "object-fit: cover;")
     image.setAttribute("class", "rounded-circle")
     let messages = document.getElementById('messages')
+    messages.scrollIntoView(false)
     let div_card = document.createElement('div')
     div_card.setAttribute('class', "card mb-3 border-0 shadow-sm")
     div_card.setAttribute('style', "max-width: 540px;")
