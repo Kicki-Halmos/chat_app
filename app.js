@@ -7,9 +7,12 @@ const mongoose = require("mongoose");
 const flash = require("connect-flash");
 const session = require("express-session");
 const passport = require("passport");
+const fileUpload = require('express-fileupload')
+const fs = require('fs')
 const User = require("./models/user");
 const Room = require("./models/room");
 require("./config/passport")(passport);
+
 
 //db
 mongoose
@@ -21,7 +24,13 @@ mongoose
 app.set("views", path.join(__dirname, "views"));
 app.set("view enginge", "ejs");
 
+//path
 app.use("/public", express.static(path.join(__dirname, "public")));
+
+//fileupload
+app.use(fileUpload({
+  createParentPath: true
+}))
 
 //bodyparser
 app.use(express.urlencoded({ extended: true }));
@@ -54,7 +63,7 @@ app.use("/users", require("./routes/users"));
 app.use("/dashboard", require("./routes/dashboard"));
 
 //socket
-let message_id = 1;
+
 io.on("connection", (socket) => {
   socket.on("dashboard", async (data) => {
     //console.log(data.id);
@@ -88,10 +97,10 @@ io.on("connection", (socket) => {
         if(error){
           console.log(error)
         }
-        console.log(result)
+        //console.log(result)
         const sender = user.name
         io.to(room_name).emit("chat message",message, sender);
-        message_id += 1
+       
       } )
 
  

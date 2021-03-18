@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+const fs = require('fs')
+
 const { ensureAuthenticated } = require("../config/auth");
 const Room = require("../models/room");
 const User = require("../models/user");
@@ -10,7 +12,23 @@ const router = express.Router();
 
 router.get("/", ensureAuthenticated, async (req, res) => {
   let userlist = []
-  let id = req.user._id
+  let id = req.user._id.toString()
+  const images_folder = './public/img'
+  let file_path = ""
+  fs.readdir(images_folder,  (error, files) => {
+      
+      console.log(files)
+      console.log(files.includes(id))
+       if(files.includes(id))  {
+         
+        file_path = `./public/img/${id}` 
+       }
+       else {
+       file_path = './public/img/Profile-Avatar'
+       }
+      })
+      
+ 
    
     
     await User.find((error, result) => {
@@ -35,7 +53,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
     for(item of result)
     channels.push(item.name)
     }
-    res.render("dashboard.ejs", { user: req.user, channels: channels, userlist:userlist });
+    res.render("dashboard.ejs", { user: req.user, channels: channels, userlist:userlist, profile_pic: file_path });
   })
  
 });
@@ -61,8 +79,26 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
   let userlist = []
   let db_messages = []
   let channels = []
-  let id = req.user._id 
   let room_name = req.params.name;
+
+  let id = req.user._id.toString()
+  const images_folder = './public/img'
+  let file_path = ""
+  fs.readdir(images_folder,  (error, files) => {
+      
+      console.log(files)
+      console.log(files.includes(id))
+       if(files.includes(id))  {
+         
+        file_path = `../public/img/${id}` 
+        console.log(file_path)
+       }
+       else {
+       file_path = '../public/img/Profile-Avatar'
+       }
+      })
+      
+ 
   await User.find((error,result)=>{
       if (error){
           console.log(error)
@@ -103,14 +139,32 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
       }
       db_messages.push(message)
     }
-    console.log(result.messages)
-    res.render("rooms.ejs", { channelname: room_name, user: req.user, channels: channels, userlist:userlist, messages: db_messages });
+    console.log('sista ' + file_path)
+    res.render("rooms.ejs", { channelname: room_name, user: req.user, channels: channels, userlist:userlist, messages: db_messages, profile_pic: file_path });
   
   })
 })
   
 
+router.post('/upload-profile-pic', (req,res) => {
+  try {
+      if(req.files){
+          let profile_pic = req.files.profile_pic
+          let id = req.user._id
 
+          let file_name = `./public/img/${id}`
+
+          profile_pic.mv(file_name)
+
+          res.redirect('/dashboard')
+      }
+      else{
+          res.end('<h1> No file uploaded! </h1>')
+      }
+  } catch(error){
+      res.end(error)
+  }
+})
   
 
 
