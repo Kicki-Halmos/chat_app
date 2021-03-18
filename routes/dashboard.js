@@ -74,7 +74,7 @@ router.post('/', (req,res) => {
   res.redirect('/dashboard')
 })
 
-router.get("/:name", ensureAuthenticated, async (req, res) => {
+router.get("/:name", ensureAuthenticated,  (req, res) => {
   
   let userlist = []
   let db_messages = []
@@ -99,7 +99,7 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
       })
       
  
-  await User.find((error,result)=>{
+ User.find((error,result)=>{
       if (error){
           console.log(error)
       }
@@ -113,7 +113,7 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
       })
 
  
-  await Room.find((error,result) => {
+   Room.find((error,result) => {
     if(error){
       console.log(error)
     }
@@ -124,7 +124,7 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
   }
 })
 
-  Room.findOne({name: room_name})
+   Room.findOne({name: room_name})
   .populate({path:'messages', populate: {path: 'message_sender', model: 'User'} })
   .exec(function (error, result) {
     if(error){
