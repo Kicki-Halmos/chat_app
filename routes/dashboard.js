@@ -37,7 +37,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   const room = new Room({
     name: req.body.channelname,
   });
@@ -50,14 +50,14 @@ router.post("/", (req, res) => {
   res.redirect("/dashboard");
 });
 
-router.get("/:name", ensureAuthenticated, (req, res) => {
+router.get("/:name", ensureAuthenticated, async (req, res) => {
   let userlist = [];
   let db_messages = [];
   let channels = [];
   let room_name = req.params.name;
   let file_path =""
 
-  User.findById(req.user.id, (error,user) => {
+  await User.findById(req.user.id, (error,user) => {
     if(error) {
       console.log(error)
     }
@@ -66,7 +66,7 @@ router.get("/:name", ensureAuthenticated, (req, res) => {
     }
   })
 
-  Room.find((error, result) => {
+ await  Room.find((error, result) => {
     if (error) {
       console.log(error);
     } else {
@@ -92,20 +92,21 @@ router.get("/:name", ensureAuthenticated, (req, res) => {
             _id: item._id,
             message_sender: item.message_sender.name,
             message: item.message,
-            file_path: '.' + item.message_sender.profile_pic
+            file_path: '.' + item.message_sender.profile_pic,
+            date: item.date
           };
           
             db_messages.push(message);
           };
         
-        res.render("rooms.ejs", {
-          channelname: room_name,
-          user: req.user,
-          channels: channels,
-          //userlist: userlist,
-          messages: db_messages,
-          profile_pic: file_path,
-        });
+          res.render("rooms.ejs", {
+            channelname: room_name,
+            user: req.user,
+            channels: channels,
+            //userlist: userlist,
+            messages: db_messages,
+            profile_pic: file_path,
+          });
       }
     });
 });

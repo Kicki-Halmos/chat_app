@@ -11,7 +11,8 @@ const fileUpload = require('express-fileupload')
 const fs = require('fs')
 const User = require("./models/user");
 const Room = require("./models/room");
-//const emoji = require('node-emoji')
+const formatMessage = require('./utils/messages')
+const {userJoin, getCurrentUser, userLeave} = require('./utils/users')
 require("./config/passport")(passport);
 
 
@@ -25,7 +26,7 @@ mongoose
 app.set("views", path.join(__dirname, "views"));
 app.set("view enginge", "ejs");
 
-//path
+//static folder
 app.use("/public", express.static(path.join(__dirname, "public")));
 
 //fileupload
@@ -64,44 +65,42 @@ app.use("/users", require("./routes/users"));
 app.use("/dashboard", require("./routes/dashboard"));
 
 //socket
-
 io.on("connection", (socket) => {
-  socket.on("dashboard", async (data) => {
-    //console.log(data.id);
-    
-    await User.findByIdAndUpdate(
-      data.id,
-      { loggedin: true },
-      (error, result) => {
-        if (error) {
-          console.log(error);
-        } else {
-          //console.log('this is the result: ' + result)
-        }
-      }
-    );
+
+
+  socket.on("dashboard",  (data) => {
+    //console.log('kommer det nåt?  ' + data.username)
+   const users =  userJoin(socket.id, data.username)
+   console.log(users)
+   socket.join('dashboard')
+    io.to('dashboard').emit('userlist', users)
   });
+
+
 
   
   socket.on("join room", async (data) => {
     const room_name = await data.room_name;
     const name = await data.name;
+    
     const user = await User.findById(data.id).exec();
     await socket.join(room_name);
 
     await socket.on("chat message",  (message) => {
      
-      
+    
       const user_message = message
+      const sender = user.name
+      const profile_pic = user.profile_pic
+      const user_data =  formatMessage(message, sender, profile_pic)
       
-      Room.findOneAndUpdate({name: room_name}, {$push: {messages: [{ message_sender: user._id, message:user_message}]}}, {useFindAndModify: false}, (error, result) => {
+      Room.findOneAndUpdate({name: room_name}, {$push: {messages: [{date: user_data.time, message_sender: user._id, message:user_message}]}}, {useFindAndModify: false}, (error, result) => {
         if(error){
           console.log(error)
         }
         //console.log(result)
-        const sender = user.name
-        const profile_pic = user.profile_pic
-        io.to(room_name).emit("chat message",message, sender, profile_pic);
+
+        io.to(room_name).emit("chat message", user_data );
        
       } )
 
@@ -113,18 +112,14 @@ io.on("connection", (socket) => {
  
   });
 
-  socket.on("disconnect", async (data) => {
-    await User.findByIdAndUpdate(
-      data.id,
-      { loggedin: false },
-      (error, result) => {
-        if (error) {
-          console.log(error);
-        } else {
-          //console.log(result)
-        }
-      }
-    );
+  socket.on("disconnect",  () => {
+    
+    const users = userLeave(socket.id)
+   
+    if(users){
+    
+      io.to('dashboard').emit('userlist', users)
+    }
   });
 });
 

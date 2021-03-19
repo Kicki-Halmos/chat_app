@@ -13,7 +13,7 @@
     <title>Chat app</title>
   </head>
   <body class="container-fluid">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top mb-5">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top mb-5" >
       <div class="container-fluid">
         <a class="navbar-brand" href="#">Chat app</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,9 +25,8 @@
               <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Click me
               </a>
-              <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                <li><a class="dropdown-item" href="/users/logout">Logout</a></li>
-              
+              <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink" style="z-index: 1;">    
+                <li><a class="dropdown-item" href="/users/logout">Logout</a></li>  
               </ul>
             </li>
           </ul>
@@ -36,7 +35,7 @@
     </nav>
     <div class="col-md-12 mt-5 pt-2">
       <div class="row">
-        <div class="col-2 fixed-top one gx-0" style="padding-left: 10px; margin-top: 65px;">
+        <div class="col-2 fixed-top one gx-0" style="padding-left: 10px; margin-top: 65px; z-index: 0;">
           <div class = "border-end shadow-sm">
           <h4>Welcome <p id="user" title="<%= user._id%>" > <%= user.name %> </p></h4>
           <img

@@ -20,18 +20,19 @@ router.get("/register", (req, res) => {
 });
 
 //logout
-router.get("/logout", ensureAuthenticated, (req, res) => {
+router.get("/logout", (req, res) => {
     let user = req.user
     console.log(user)
-    User.findByIdAndUpdate(user._id, {loggedin:false}, (error, result) => {
+    /*User.findByIdAndUpdate(user._id, {loggedin:false}, (error, result) => {
         if(error){
             console.log(error)
         }
         else{
-            req.logout();
-            res.redirect("/");
+            
         }
-    })
+    })*/
+    req.logout();
+    res.redirect("/");
 
 });
 

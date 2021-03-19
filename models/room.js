@@ -11,6 +11,9 @@ const RoomSchema = new mongoose.Schema({
             type: mongoose.ObjectId
             
         },
+        date: {
+            type: String
+        },
         message_sender: {
             type: Schema.Types.ObjectId, 
             ref: 'User', 
