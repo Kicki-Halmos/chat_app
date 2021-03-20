@@ -16,8 +16,8 @@
                 <div class="col-10"> 
                     <div class="card-body">
                         <strong class="card-title"><%= message.message_sender%></strong>
-                        <span style="color: gray; font-size: small;"><%=message.date%></span>
                         <p class="card-text"><%= message.message%></p>
+                        <p class="card-text"><small class="text-muted">Sent <%=message.date%></small></p>
                      </div>  
                 </div>   
             </div>
@@ -27,9 +27,9 @@
 </div>
 
 <div class="col-2">
-    <strong>users</strong>
+   
     <ul class="nav flex-column" id="online_users"
-     
+    <strong>users</strong>
     </ul>
 </div>
 

@@ -29,7 +29,7 @@ socket.emit("join room", {
 form.addEventListener('submit', e => {
     e.preventDefault();
 
-    console.log('web2 ' + socket.id)
+    //console.log('web2 ' + socket.id)
     messages.scrollTop = messages.scrollHeight
 
     if(input.value) {
@@ -53,12 +53,14 @@ socket.on('chat message', (message) => {
     item_message.textContent = message.text;
     let image = document.createElement('img')
     image.setAttribute("src",'.' + message.profile_pic)
-    image.setAttribute("style", "width: 75px", "height: 75px;", "object-fit: cover;")
+    image.setAttribute("style", "width: 75px; height: 75px; object-fit: cover;")
     image.setAttribute("class", "rounded-circle")
     let messages = document.getElementById('messages')
-    let date = document.createElement('span')
-    date.setAttribute("style", "color: gray; font-size: small;")
-    date.textContent = message.time
+    let date = document.createElement('p')
+    date.setAttribute("class", "card-text")
+    let small = document.createElement('small')
+    small.setAttribute("class", "text-muted")
+    small.textContent = 'Sent ' + message.time
    
     messages.scrollTop = messages.scrollHeight
     let div_card = document.createElement('div')
@@ -81,15 +83,16 @@ socket.on('chat message', (message) => {
     div_col2.appendChild(image)
     div_col10.appendChild(div_cardbody)
     div_cardbody.appendChild(item_sender)
-    div_cardbody.appendChild(date)
     div_cardbody.appendChild(item_message)
+    div_cardbody.appendChild(date)
+    date.appendChild(small)
 
  
     
 })
 
 socket.on('userlist', users => {
-    console.log(users)
+   // console.log(users)
 
     /*userList.innerHTML = `
     ${users.map(user => `<li>${user.username}</li>`).join('')} `*/
@@ -99,7 +102,7 @@ socket.on('userlist', users => {
     <input type="hidden" name="name" value="${user.username}">
     <input type="hidden" name="id" value="${user.id}">
     <input type="hidden" name="socketId" value="${user.socketId}">
-    <button type="submit" class="nav-link">${user.username}</button>
+    <button type="submit" style="border:none; background:white;" class="nav-link">${user.username}</button>
     </form>
     </li>`).join('')}`
     

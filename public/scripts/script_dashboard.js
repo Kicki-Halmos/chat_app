@@ -9,15 +9,23 @@ socket.emit("dashboard", {
 })
 
 socket.on('userlist', users => {
-   // console.log(users)
-   userList.innerHTML = `
-   ${users.map(user => `<li class="user" >${user.username}</li>`).join('')}
-   `
-
-   /* users.map(user => {
-        let li = document.createElement('li')
-        li.setAttribute('title', user.id)
-        li.innerHTML= user.username
-        userList.appendChild(li)
-    })*/
-})
+    // console.log(users)
+ 
+     /*userList.innerHTML = `
+     ${users.map(user => `<li>${user.username}</li>`).join('')} `*/
+     userList.innerHTML = `
+     ${users.map(user => `<li class="nav-item">
+     <form action="/dashboard/dm" method="POST">
+     <input type="hidden" name="name" value="${user.username}">
+     <input type="hidden" name="id" value="${user.id}">
+     <input type="hidden" name="socketId" value="${user.socketId}">
+     <button type="submit" style="border:none; background:white;" class="nav-link">${user.username}</button>
+     </form>
+     </li>`).join('')}`
+     
+     
+     
+     
+     
+    // <li title="${user.id}">${user.username}</li>`).join('')}`
+ })

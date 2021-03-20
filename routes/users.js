@@ -91,4 +91,9 @@ router.post("/register", (req, res) => {
   }
 });
 
+//me
+router.get('/me', (req,res) => {
+  res.render('profile_page.ejs')
+})
+
 module.exports = router;

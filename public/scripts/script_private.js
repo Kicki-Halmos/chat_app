@@ -39,7 +39,9 @@ socket.on('userlist', users => {
     
 })
 
-
+userList.addEventListener('click', e => {
+    console.log(e.target)
+})
 
 private_form.addEventListener('submit', e => {
     e.preventDefault();
@@ -75,13 +77,15 @@ socket.on("private message", message => {
     item_message.setAttribute('class','card-text')
     item_message.textContent = message.text;
     let image = document.createElement('img')
-    image.setAttribute("src",'.' + message.profile_pic)
-    image.setAttribute("style", "width: 75px", "height: 75px;", "object-fit: cover;")
+    image.setAttribute("src", `../.${message.profile_pic}`)
+    image.setAttribute("style", "width: 75px; height: 75px; object-fit: cover;")
     image.setAttribute("class", "rounded-circle")
     let messages = document.getElementById('messages_private')
-    let date = document.createElement('span')
-    date.setAttribute("style", "color: gray; font-size: small;")
-    date.textContent = message.time
+    let date = document.createElement('p')
+    date.setAttribute("class", "card-text")
+    let small = document.createElement('small')
+    small.setAttribute("class", "text-muted")
+    small.textContent = 'Sent ' + message.time
    
     //messages.scrollTop = messages.scrollHeight
     let div_card = document.createElement('div')
@@ -104,8 +108,9 @@ socket.on("private message", message => {
     div_col2.appendChild(image)
     div_col10.appendChild(div_cardbody)
     div_cardbody.appendChild(item_sender)
-    div_cardbody.appendChild(date)
     div_cardbody.appendChild(item_message)
+    div_cardbody.appendChild(date)
+    date.appendChild(small)
 
 })
 })

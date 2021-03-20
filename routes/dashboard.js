@@ -8,6 +8,7 @@ const User = require("../models/user");
 const PrivateChat = require("../models/private_chat");
 const router = express.Router();
 
+//dashboard
 router.get("/", ensureAuthenticated, async (req, res) => {
   //let userlist = [];
   let file_path = ""
@@ -30,7 +31,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
     } else {
       for (item of result) {
        let membersArray = item.members
-       console.log(membersArray)
+       //console.log(membersArray)
        if(membersArray.includes(req.user.id)){
         dm.push(item.name);
       }
@@ -54,6 +55,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
   
 });
 
+//create new channel
 router.post("/", (req, res) => {
   //console.log(req.body);
   const room = new Room({
@@ -68,6 +70,7 @@ router.post("/", (req, res) => {
   res.redirect("/dashboard");
 });
 
+//join channel
 router.get("/:name", ensureAuthenticated, async (req, res) => {
   let dm = [];
   let db_messages = [];
@@ -75,15 +78,19 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
   let room_name = req.params.name;
   let file_path =""
 
- await PrivateChat.find((error, result) => {
+  await PrivateChat.find((error, result) => {
     if (error) {
       console.log(error);
     } else {
       for (item of result) {
+       let membersArray = item.members
+       //console.log(membersArray)
+       if(membersArray.includes(req.user.id)){
         dm.push(item.name);
       }
     }
-  })
+    }
+  });
 
   await User.findById(req.user.id, (error,user) => {
     if(error) {
@@ -140,21 +147,43 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
     });
 });
 
-router.post("/dm", (req, res) => {
+//create new dm -  channel
+router.post("/dm", async (req, res) => {
   room_name = req.user.name + "-" + req.body.name
-  const privateChat = new PrivateChat({
-    name: room_name,
-    members: [req.user.id, req.body.id]
-  });
+  console.log(room_name)
 
-  privateChat
-    .save()
-    .then((value) => {})
-    .catch((error) => console.log(error));
+  let private_chat = await PrivateChat.find({$and: [{members: req.user.id}, {members: req.body.id}]}, (error, result) => {
+    if(error){
+      console.log(error)
+    }
+    else {
+      console.log(result)
+    }
+  })
 
-  res.redirect("/dashboard/dm/:room_name");
+  console.log(private_chat)
+
+  if(private_chat.length > 0) { 
+    res.redirect(`/dashboard/dm/${private_chat[0].name}`)
+  }
+    else {
+      privateChat = new PrivateChat({
+        name: room_name,
+        members: [req.user.id, req.body.id]
+      });
+    
+      privateChat
+        .save()
+        .then((value) => {})
+        .catch((error) => console.log(error));
+        res.redirect(`/dashboard/dm/${room_name}`)
+    }
+    
+  
+  
 });
 
+//join dm - channel
 router.get("/dm/:name", ensureAuthenticated,  async (req, res) => { 
   let dm = [];
   let db_messages = [];
@@ -162,15 +191,19 @@ router.get("/dm/:name", ensureAuthenticated,  async (req, res) => {
   let room_name = req.params.name;
   let file_path =""
 
- await PrivateChat.find((error, result) => {
+  await PrivateChat.find((error, result) => {
     if (error) {
       console.log(error);
     } else {
       for (item of result) {
+       let membersArray = item.members
+       //console.log(membersArray)
+       if(membersArray.includes(req.user.id)){
         dm.push(item.name);
       }
     }
-  })
+    }
+  });
   
   await User.findById(req.user.id, (error,user) => {
     if(error) {
@@ -227,6 +260,7 @@ router.get("/dm/:name", ensureAuthenticated,  async (req, res) => {
     });
 });
 
+//upload new profile pic
 router.post("/upload-profile-pic", (req, res) => {
   try {
     if (req.files) {

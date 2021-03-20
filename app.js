@@ -7,17 +7,21 @@ const mongoose = require("mongoose");
 const flash = require("connect-flash");
 const session = require("express-session");
 const passport = require("passport");
-const fileUpload = require('express-fileupload')
-const fs = require('fs')
+const fileUpload = require("express-fileupload");
+const fs = require("fs");
 const User = require("./models/user");
 const Room = require("./models/room");
-const formatMessage = require('./utils/messages')
-const {userJoin, getCurrentUser, userLeave} = require('./utils/users');
+const formatMessage = require("./utils/messages");
+const { userJoin, getCurrentUser, userLeave } = require("./utils/users");
 const PrivateChat = require("./models/private_chat");
 require("./config/passport")(passport);
 
-
 //db
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
+
 mongoose
   .connect("mongodb://localhost:27017/slack")
   .then(() => console.log("connected to db"))
@@ -31,9 +35,11 @@ app.set("view enginge", "ejs");
 app.use("/public", express.static(path.join(__dirname, "public")));
 
 //fileupload
-app.use(fileUpload({
-  createParentPath: true
-}))
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
 
 //bodyparser
 app.use(express.urlencoded({ extended: true }));
@@ -66,77 +72,81 @@ app.use("/users", require("./routes/users"));
 app.use("/dashboard", require("./routes/dashboard"));
 
 //socket
-io.on("connection", (socket) => {
-  //console.log('server1 ' + socket.id)
+io.on("connection", (socket) => { 
+  console.log('socket connected')
 
-  socket.on("dashboard",  (data) => {
-    //console.log('kommer det nåt?  ' + data.username)
-   const users =  userJoin(socket.id, data.id, data.username)
-   //console.log(users)
-   socket.join('dashboard')
-    io.to('dashboard').emit('userlist', users)
+  socket.on("dashboard", (data) => {
+    console.log('dashboard connected')
+    const users = userJoin(socket.id, data.id, data.username);
+    //console.log(users)
+    socket.join("dashboard");
+    io.to("dashboard").emit("userlist", users);
   });
 
- 
   socket.on('private chat', async (data)=>{ 
-       //await socket.join('private chat')
-      const user = await User.findById(data.id).exec();
-      const user_message = await data.message
-      const sender = await user.name
-      const profile_pic = await user.profile_pic
-      const id = socket.id
-      const user_data = formatMessage(user_message, sender, profile_pic)
-      console.log(user_data)
-      await socket.join('private chat')
-      await PrivateChat.findOneAndUpdate({name: data.room_name}, {$push: {messages: [{date: user_data.time, message_sender: user._id, message:user_message}]}}, {useFindAndModify: false}, (error, result) => {
-        if(error){
-          console.log(error)
-        }
-     
-     io.to('private chat').emit("private message", user_data)
-      })
-  })
+    //await socket.join('private chat')
+   const user = await User.findById(data.id).exec();
+   const user_message = await data.message
+   const sender = await user.name
+   const profile_pic = await user.profile_pic
+   const id = socket.id
+   const user_data = formatMessage(user_message, sender, profile_pic)
+   console.log(user_data)
+   await socket.join('private chat')
+   await PrivateChat.findOneAndUpdate({name: data.room_name}, {$push: {messages: [{date: user_data.time, message_sender: user._id, message:user_message}]}}, {useFindAndModify: false}, (error, result) => {
+     if(error){
+       console.log(error)
+     }
   
+  io.to('private chat').emit("private message", user_data)
+   })
+})
+
   socket.on("join room", async (data) => {
+    console.log('channel connected')
     const room_name = await data.room_name;
     const name = await data.name;
-    
+
     const user = await User.findById(data.id).exec();
     await socket.join(room_name);
 
-    await socket.on("chat message",  (message) => {
-     
-    
-      const user_message = message
-      const sender = user.name
-      const profile_pic = user.profile_pic
-      const user_data =  formatMessage(message, sender, profile_pic)
-      
-      Room.findOneAndUpdate({name: room_name}, {$push: {messages: [{date: user_data.time, message_sender: user._id, message:user_message}]}}, {useFindAndModify: false}, (error, result) => {
-        if(error){
-          console.log(error)
+    await socket.on("chat message", (message) => {
+      const user_message = message;
+      const sender = user.name;
+      const profile_pic = user.profile_pic;
+      const user_data = formatMessage(message, sender, profile_pic);
+
+      Room.findOneAndUpdate(
+        { name: room_name },
+        {
+          $push: {
+            messages: [
+              {
+                date: user_data.time,
+                message_sender: user._id,
+                message: user_message,
+              },
+            ],
+          },
+        },
+        { useFindAndModify: false },
+        (error, result) => {
+          if (error) {
+            console.log(error);
+          }
+          //console.log(result)
+
+          io.to(room_name).emit("chat message", user_data);
         }
-        //console.log(result)
-
-        io.to(room_name).emit("chat message", user_data );
-       
-      } )
-
- 
+      );
+    });
   });
 
- 
-    
- 
-  });
+  socket.on("disconnect", () => {
+    const users = userLeave(socket.id);
 
-  socket.on("disconnect",  () => {
-    
-    const users = userLeave(socket.id)
-   
-    if(users){
-    
-      io.to('dashboard').emit('userlist', users)
+    if (users) {
+      io.to("dashboard").emit("userlist", users);
     }
   });
 });
