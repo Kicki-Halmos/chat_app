@@ -1,0 +1,20 @@
+<%- include('blocks/header_dashboard.ejs'); -%>
+<div class= "col-8 offset-2 two gx-0 mb-5">
+<strong> #<%= channelname %></strong>
+<div id="messages_private">
+    <% for (message of messages) { %>
+        <div title="<%=message._id%>">
+        <strong><%= message.message_sender%></strong>
+        <p><%= message.message%></p>
+    </div>
+   <% } %>
+</div>
+</div>
+<div class="col-2">
+    <strong>users</strong>
+    <ul class="nav flex-column" id="online_users"
+     
+</ul>
+</div>
+
+<%- include('blocks/footer_private.ejs'); -%>

@@ -5,12 +5,14 @@ const fs = require("fs");
 const { ensureAuthenticated } = require("../config/auth");
 const Room = require("../models/room");
 const User = require("../models/user");
+const PrivateChat = require("../models/private_chat");
 const router = express.Router();
 
 router.get("/", ensureAuthenticated, async (req, res) => {
   //let userlist = [];
   let file_path = ""
   let channels = [];
+  let dm = [];
 
   await User.findById(req.user.id, (error,user) => {
     if(error) {
@@ -20,6 +22,22 @@ router.get("/", ensureAuthenticated, async (req, res) => {
       file_path = user.profile_pic
     }
   })
+
+ 
+  await PrivateChat.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+       let membersArray = item.members
+       console.log(membersArray)
+       if(membersArray.includes(req.user.id)){
+        dm.push(item.name);
+      }
+    }
+    }
+  });
+
   await Room.find((error, result) => {
     if (error) {
       console.log(error);
@@ -29,7 +47,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
     res.render("dashboard.ejs", {
       user: req.user,
       channels: channels,
-      //userlist: userlist,
+      dm: dm,
       profile_pic: file_path,
     });
   });
@@ -51,11 +69,21 @@ router.post("/", (req, res) => {
 });
 
 router.get("/:name", ensureAuthenticated, async (req, res) => {
-  let userlist = [];
+  let dm = [];
   let db_messages = [];
   let channels = [];
   let room_name = req.params.name;
   let file_path =""
+
+ await PrivateChat.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+        dm.push(item.name);
+      }
+    }
+  })
 
   await User.findById(req.user.id, (error,user) => {
     if(error) {
@@ -88,6 +116,7 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
         //console.log(result.messages);
 
         for (item of result.messages) {
+          
           let message = {
             _id: item._id,
             message_sender: item.message_sender.name,
@@ -103,7 +132,94 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
             channelname: room_name,
             user: req.user,
             channels: channels,
-            //userlist: userlist,
+            dm:dm,
+            messages: db_messages,
+            profile_pic: file_path,
+          });
+      }
+    });
+});
+
+router.post("/dm", (req, res) => {
+  room_name = req.user.name + "-" + req.body.name
+  const privateChat = new PrivateChat({
+    name: room_name,
+    members: [req.user.id, req.body.id]
+  });
+
+  privateChat
+    .save()
+    .then((value) => {})
+    .catch((error) => console.log(error));
+
+  res.redirect("/dashboard/dm/:room_name");
+});
+
+router.get("/dm/:name", ensureAuthenticated,  async (req, res) => { 
+  let dm = [];
+  let db_messages = [];
+  let channels = [];
+  let room_name = req.params.name;
+  let file_path =""
+
+ await PrivateChat.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+        dm.push(item.name);
+      }
+    }
+  })
+  
+  await User.findById(req.user.id, (error,user) => {
+    if(error) {
+      console.log(error)
+    }
+    else{
+      file_path += '../.' + user.profile_pic
+    }
+  })
+
+ await  Room.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+        channels.push(item.name);
+      }
+    }
+  });
+
+  PrivateChat.findOne({ name: room_name })
+    .populate({
+      path: "messages",
+      populate: { path: "message_sender", model: "User" },
+    })
+    .exec(function (error, result) {
+      if (error) {
+        return HandleError(error);
+      } else {
+        //console.log(result.messages);
+
+        for (item of result.messages) {
+          
+          let message = {
+            _id: item._id,
+            message_sender: item.message_sender.name,
+            message: item.message,
+            file_path: '../.' + item.message_sender.profile_pic,
+            date: item.date
+          };
+          
+            db_messages.push(message);
+          };
+        
+          res.render("rooms.ejs", {
+            channelname: room_name,
+            user: req.user,
+            channels: channels,
+            dm:dm,
             messages: db_messages,
             profile_pic: file_path,
           });

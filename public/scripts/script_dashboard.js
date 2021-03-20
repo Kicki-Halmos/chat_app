@@ -8,10 +8,16 @@ socket.emit("dashboard", {
     username:username
 })
 
-socket.on('userlist', async users => {
+socket.on('userlist', users => {
    // console.log(users)
-    userList.innerHTML = `
-    ${users.map(user => `<li class="user" >${user.username}</li>`).join('')}
+   userList.innerHTML = `
+   ${users.map(user => `<li class="user" >${user.username}</li>`).join('')}
+   `
 
-    `
+   /* users.map(user => {
+        let li = document.createElement('li')
+        li.setAttribute('title', user.id)
+        li.innerHTML= user.username
+        userList.appendChild(li)
+    })*/
 })
