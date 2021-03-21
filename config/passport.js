@@ -7,15 +7,16 @@ module.exports = function (passport) {
     new LocalStrategy(
       {
         usernameField: "email",
+        passReqToCallback: true
       },
-      function (username, password, done) {
+      function (req, username, password, done) {
         User.findOne({ email: username }, function (error, user) {
           if (error) {
             return done(error);
           }
 
           if (!user) {
-            return done(null, false, { message: "Incorrect username." });
+            return done(null, false, req.flash('error_msg', "Incorrect username."));
           }
 
           bcrypt.compare(password, user.password, (error, isMatch) => {
@@ -26,7 +27,7 @@ module.exports = function (passport) {
             if (isMatch) {
               return done(null, user);
             } else {
-              return done(null, false, { message: "Incorrect password." });
+              return done(null, false, req.flash('error_msg', "Incorrect password."));
             }
           });
         }).catch((error) => console.log(error));
