@@ -1,21 +1,36 @@
 <%- include('blocks/header_dashboard.ejs'); -%>
-<div class= "col-8 offset-2 two gx-0 mb-5">
-<strong> #<%= channelname %></strong>
-<div id="messages_private">
-    <% for (message of messages) { %>
-        <div title="<%=message._id%>">
-        <strong><%= message.message_sender%></strong>
-        <p><%= message.message%></p>
-        <p class="card-text"><small class="text-muted">Sent <%=message.date%></small></p>
+<div class= "col-8 offset-2 two gx-0 mb-5"> 
+    <div class="shadow-sm p-2"style="position: fixed; z-index: 1; background-color: white; height: 50px; width:66.5% " ><strong > #<%= channelname %></strong> </div> <br> <br>
+    <div id="messages_private" class="mt-3 ml-5" style="overflow-y: scroll;">
+        <% for (message of messages) { %>
+            <div class="card mb-3 border-0 shadow-sm" title="<%=message._id%>">
+                <div class="row g-0">
+                    <div class="col-2">
+                        <img 
+                        class="rounded-circle" 
+                        style="width: 75px;
+                        height: 75px;
+                        object-fit: cover;" 
+                        src="<%= message.file_path%> " alt=""> 
+                    </div>
+                    <div class="col-10"> 
+                        <div class="card-body">
+                            <strong class="card-title"><%= message.message_sender%></strong>
+                            <p class="card-text"><%= message.message%></p>
+                            <p class="card-text"><small class="text-muted">Sent <%=message.date%></small></p>
+                         </div>  
+                    </div>   
+                </div>
+            </div>
+       <% } %>
     </div>
-   <% } %>
-</div>
-</div>
-<div class="col-2">
-    <strong>users</strong>
-    <ul class="nav flex-column" id="online_users"
-     
-</ul>
-</div>
+    </div>
+    
+   <div class="col-2 gx-0 border-start" style="height: 100vh;">
+      <div class="p-2 shadow-sm" style="height: 50px;"><strong >#users</strong></div>
+      <ul class="nav flex-column mt-2" id="online_users">
+      
+      </ul>
+  </div>
 
 <%- include('blocks/footer_private.ejs'); -%>

@@ -7,8 +7,8 @@ let id = document.getElementById('user').title
 let username = document.getElementById('user').innerText
 let messages = document.getElementById('messages')
 let userList = document.getElementById('online_users')
-let private_form = document.getElementById('private_form')
-let private_input = document.getElementById('private_input')
+//let private_form = document.getElementById('private_form')
+//let private_input = document.getElementById('private_input')
 messages.scrollTop = messages.scrollHeight
 
 console.log(username)
@@ -102,7 +102,7 @@ socket.on('userlist', users => {
     <input type="hidden" name="name" value="${user.username}">
     <input type="hidden" name="id" value="${user.id}">
     <input type="hidden" name="socketId" value="${user.socketId}">
-    <button type="submit" style="border:none; background:white;" class="nav-link">${user.username}</button>
+    <button type="submit" style="border:none; background:white;" class="nav-link">🦄 ${user.username}</button>
     </form>
     </li>`).join('')}`
     

@@ -78,26 +78,26 @@ io.on("connection", (socket) => {
   socket.on("dashboard", (data) => {
     console.log('dashboard connected')
     const users = userJoin(socket.id, data.id, data.username);
-    //console.log(users)
+    
     socket.join("dashboard");
     io.to("dashboard").emit("userlist", users);
   });
 
   socket.on('private chat', async (data)=>{ 
-    //await socket.join('private chat')
+    console.log('data' + data)
    const user = await User.findById(data.id).exec();
    const user_message = await data.message
    const sender = await user.name
    const profile_pic = await user.profile_pic
    const id = socket.id
    const user_data = formatMessage(user_message, sender, profile_pic)
-   console.log(user_data)
+   console.log('user_data' + user_data)
    await socket.join('private chat')
-   await PrivateChat.findOneAndUpdate({name: data.room_name}, {$push: {messages: [{date: user_data.time, message_sender: user._id, message:user_message}]}}, {useFindAndModify: false}, (error, result) => {
+  PrivateChat.findOneAndUpdate({name: data.room_name}, {$push: {messages: [{date: user_data.time, message_sender: user._id, message:user_message}]}}, {useFindAndModify: false}, (error, result) => {
      if(error){
        console.log(error)
      }
-  
+  console.log('dm ' + result)
   io.to('private chat').emit("private message", user_data)
    })
 })
@@ -134,7 +134,7 @@ io.on("connection", (socket) => {
           if (error) {
             console.log(error);
           }
-          //console.log(result)
+          console.log('room' + result)
 
           io.to(room_name).emit("chat message", user_data);
         }

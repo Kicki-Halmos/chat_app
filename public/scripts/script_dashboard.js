@@ -19,7 +19,7 @@ socket.on('userlist', users => {
      <input type="hidden" name="name" value="${user.username}">
      <input type="hidden" name="id" value="${user.id}">
      <input type="hidden" name="socketId" value="${user.socketId}">
-     <button type="submit" style="border:none; background:white;" class="nav-link">${user.username}</button>
+     <button type="submit" style="border:none; background:white;" class="nav-link">🦄 ${user.username}</button>
      </form>
      </li>`).join('')}`
      

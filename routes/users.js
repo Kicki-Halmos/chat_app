@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
+const Room = require("../models/room");
 const User = require("../models/user");
+const PrivateChat = require("../models/private_chat");
 
 const router = express.Router();
 const bcrypt = require("bcrypt");
@@ -92,8 +94,82 @@ router.post("/register", (req, res) => {
 });
 
 //me
-router.get('/me', (req,res) => {
-  res.render('profile_page.ejs')
+router.get('/me', ensureAuthenticated, async(req,res) => {
+  let channels = [];
+  let dm = [];
+  await PrivateChat.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) {
+       let membersArray = item.members
+       //console.log(membersArray)
+       if(membersArray.includes(req.user.id)){
+        dm.push(item.name);
+      }
+    }
+    }
+  });
+
+  await Room.find((error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      for (item of result) channels.push(item.name);
+    } 
+  });
+
+  await User.findById(req.user._id, (error, result) => {
+    if(error){
+      console.log(error)
+    }
+    else{
+      let name = result.name
+      let profile_pic = '.' + result.profile_pic
+      let email = result.email
+      res.render('profile_page.ejs', {
+        profile_pic: profile_pic, 
+        email: email, 
+        name:name,
+        channels: channels,
+        dm: dm,
+      })
+    }
+    
+  
+  })
+
 })
+
+//upload new profile pic
+router.post("/upload-profile-pic", (req, res) => {
+  try {
+    if (req.files) {
+      let profile_pic = req.files.profile_pic;
+      let id = req.user._id;
+
+      let file_name = `./public/img/${id}`;
+
+      profile_pic.mv(file_name);
+      User.findByIdAndUpdate(id, {profile_pic: file_name},() => res.redirect("/users/me"))
+      
+    } else {
+      res.end("<h1> No file uploaded! </h1>");
+    }
+  } catch (error) {
+    res.end(error);
+  }
+});
+
+router.post("/new-email", (req, res) => {
+  User.findByIdAndUpdate(req.user._id,{email: req.body.email}, (error,result) => {
+    if(error){
+      console.log(error)
+    }
+    else{
+      res.redirect('/user/me')
+    }
+  })
+});
 
 module.exports = router;

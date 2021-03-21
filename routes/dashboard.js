@@ -67,7 +67,7 @@ router.post("/", (req, res) => {
     .then((value) => {})
     .catch((error) => console.log(error));
 
-  res.redirect("/dashboard");
+  res.redirect(`/dashboard/${req.body.channelname}`);
 });
 
 //join channel
@@ -248,7 +248,7 @@ router.get("/dm/:name", ensureAuthenticated,  async (req, res) => {
             db_messages.push(message);
           };
         
-          res.render("rooms.ejs", {
+          res.render("private_chat.ejs", {
             channelname: room_name,
             user: req.user,
             channels: channels,
@@ -260,24 +260,7 @@ router.get("/dm/:name", ensureAuthenticated,  async (req, res) => {
     });
 });
 
-//upload new profile pic
-router.post("/upload-profile-pic", (req, res) => {
-  try {
-    if (req.files) {
-      let profile_pic = req.files.profile_pic;
-      let id = req.user._id;
 
-      let file_name = `./public/img/${id}`;
 
-      profile_pic.mv(file_name);
-      User.findByIdAndUpdate(id, {profile_pic: file_name},() => res.redirect("/dashboard"))
-      
-    } else {
-      res.end("<h1> No file uploaded! </h1>");
-    }
-  } catch (error) {
-    res.end(error);
-  }
-});
 
 module.exports = router;
