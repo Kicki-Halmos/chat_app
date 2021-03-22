@@ -109,12 +109,11 @@ socket.on("private message", message => {
     div_cardbody.appendChild(item_message)
     div_cardbody.appendChild(date)
     date.appendChild(small)
+    messages.scrollIntoView(false)
 
 })
 
-userList.addEventListener('click', e => {
-    console.log(e.target)
-})
+
 })
 
 

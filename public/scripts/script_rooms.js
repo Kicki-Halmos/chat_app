@@ -9,7 +9,7 @@ let messages = document.getElementById('messages')
 let userList = document.getElementById('online_users')
 //let private_form = document.getElementById('private_form')
 //let private_input = document.getElementById('private_input')
-messages.scrollTop = messages.scrollHeight
+messages.scrollIntoView(false)
 
 console.log(username)
 const socket = io();
@@ -62,7 +62,7 @@ socket.on('chat message', (message) => {
     small.setAttribute("class", "text-muted")
     small.textContent = 'Sent ' + message.time
    
-    messages.scrollTop = messages.scrollHeight
+    
     let div_card = document.createElement('div')
     div_card.setAttribute('class', "card mb-3 border-0 shadow-sm")
     //div_card.setAttribute('style', "max-width: 540px;")
@@ -87,7 +87,7 @@ socket.on('chat message', (message) => {
     div_cardbody.appendChild(date)
     date.appendChild(small)
 
- 
+    messages.scrollIntoView(false)
     
 })
 
