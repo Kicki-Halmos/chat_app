@@ -10,7 +10,7 @@ let userList = document.getElementById('online_users')
 let private_form = document.getElementById('private_form')
 let private_input = document.getElementById('private_input')
 let room_name = private_input.name
-messages.scrollTop = messages.scrollHeight
+messages.scrollIntoView(false)
 console.log(username)
 
 const socket = io();
