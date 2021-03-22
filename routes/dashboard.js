@@ -150,7 +150,7 @@ router.get("/:name", ensureAuthenticated, async (req, res) => {
 //create new dm -  channel
 router.post("/dm", async (req, res) => {
   room_name = req.user.name + "-" + req.body.name
-  console.log(room_name)
+  
 
   let private_chat = await PrivateChat.find({$and: [{members: req.user.id}, {members: req.body.id}]}, (error, result) => {
     if(error){

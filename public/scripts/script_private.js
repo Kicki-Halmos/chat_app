@@ -11,7 +11,7 @@ let private_form = document.getElementById('private_form')
 let private_input = document.getElementById('private_input')
 let room_name = private_input.name
 messages.scrollIntoView(false)
-console.log(username)
+//console.log(username)
 
 const socket = io();
 
@@ -21,25 +21,10 @@ socket.emit("dashboard", {
     username: username
 })
 
-
-socket.on('userlist', users => {
-    console.log(users)
-
-    /*userList.innerHTML = `
-    ${users.map(user => `<li title="${user.socketId}">${user.username}</li>`).join('')}`*/
-    userList.innerHTML = `
-    ${users.map(user => `<li class="nav-item">
-    <form action="/dashboard/dm" method="POST">
-    <input type="hidden" name="name" value="${user.username}">
-    <input type="hidden" name="id" value="${user.id}">
-    <input type="hidden" name="socketId" value="${user.socketId}">
-    <button type="submit" style="border:none; background:white;" class="nav-link">🦄 ${user.username}</button>
-    </form>
-    </li>`).join('')}`
-    
+socket.emit("private room", {
+    room_name: room_name,
+    id: id
 })
-
-
 
 private_form.addEventListener('submit', e => {
     e.preventDefault();
@@ -55,18 +40,13 @@ private_form.addEventListener('submit', e => {
     }
 
     private_input.value = '';
-    
-
-    
-
 
 })
-   
 
-
-socket.on("private message", message => {
-
-    console.log('hallå' + message);
+socket.on("private chat", (message) => {
+    //let dm_link = document.getElementById(room_name)
+    //dm_link.setAttribute("style", "color: pink")
+    //console.log(message)
     let item_sender = document.createElement('strong')
     item_sender.setAttribute('class', 'card-title')
     item_sender.textContent = message.username
@@ -113,6 +93,28 @@ socket.on("private message", message => {
 
 })
 
+
+socket.on('userlist', users => {
+    console.log(users)
+
+    /*userList.innerHTML = `
+    ${users.map(user => `<li title="${user.socketId}">${user.username}</li>`).join('')}`*/
+    userList.innerHTML = `
+    ${users.map(user => `<li class="nav-item">
+    <form action="/dashboard/dm" method="POST">
+    <input type="hidden" name="name" value="${user.username}">
+    <input type="hidden" name="id" value="${user.id}">
+    <input type="hidden" name="socketId" value="${user.socketId}">
+    <button type="submit" style="border:none; background:white;" class="nav-link">🦄 ${user.username}</button>
+    </form>
+    </li>`).join('')}`
+    
+})
+   
+function changeColor(room_name){
+    document.getElementById(room_name).setAttribute("style", "color: blue")
+ 
+}
 
 })
 

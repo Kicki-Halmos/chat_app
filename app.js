@@ -83,23 +83,28 @@ io.on("connection", (socket) => {
     io.to("dashboard").emit("userlist", users);
   });
 
-  socket.on('private chat', async (data)=>{ 
-    console.log('data' + data)
-   const user = await User.findById(data.id).exec();
-   const user_message = await data.message
-   const sender = await user.name
-   const profile_pic = await user.profile_pic
-   const id = socket.id
-   const user_data = formatMessage(user_message, sender, profile_pic)
-   console.log('user_data' + user_data)
-   await socket.join('private chat')
-  PrivateChat.findOneAndUpdate({name: data.room_name}, {$push: {messages: [{date: user_data.time, message_sender: user._id, message:user_message}]}}, {useFindAndModify: false}, (error, result) => {
-     if(error){
-       console.log(error)
-     }
-  console.log('dm ' + result)
-  io.to('private chat').emit("private message", user_data)
-   })
+  socket.on('private room', async (data)=>{ 
+    console.log(data)
+    const room_name = await data.room_name;
+    const name = await data.name;
+
+    const user = await User.findById(data.id).exec();
+    await socket.join(room_name);
+    await socket.on('private chat', (message) => {
+      const user_message = message.message;
+      const sender = user.name;
+      const profile_pic = user.profile_pic;
+      const user_data = formatMessage(user_message, sender, profile_pic);
+      //console.log(message)
+     PrivateChat.findOneAndUpdate({name: room_name}, {$push: {messages: [{date: user_data.time, message_sender: user._id, message:user_message}]}}, {useFindAndModify: false}, (error, result) => {
+        if(error){
+          console.log(error)
+        }
+    // console.log('dm ' + result)
+     io.to(room_name).emit("private chat", (user_data))
+      })
+    })
+ 
 })
 
   socket.on("join room", async (data) => {

@@ -65,7 +65,7 @@
            
         <% for (item of dm) {%>
               <li class="nav-item">
-                <a class="nav-link" href="/dashboard/dm/<%= item%>"
+                <a class="nav-link" id="<%=item %>" onclick="changeColor(item)" href="/dashboard/dm/<%= item%>"
                   ># <%= item%></a>
               </li> 
             <%}%>
