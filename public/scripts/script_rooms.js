@@ -40,6 +40,8 @@ form.addEventListener('submit', e => {
     input.value = '';
 })
 
+document.getElementById('spec_message').addEventListener()
+
 
 
 socket.on('chat message', (message) => {

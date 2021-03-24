@@ -6,17 +6,20 @@ module.exports = function (passport) {
   passport.use(
     new LocalStrategy(
       {
+       
         usernameField: "email",
+        
         passReqToCallback: true
       },
       function (req, username, password, done) {
-        User.findOne({ email: username }, function (error, user) {
+  
+        User.findOne((username.includes('@')) ? {email:username} : {name:username}, function (error, user) {
           if (error) {
             return done(error);
           }
 
           if (!user) {
-            return done(null, false, req.flash('error_msg', "Incorrect username."));
+            return done(null, false, req.flash('error_msg', "Incorrect username or email."));
           }
 
           bcrypt.compare(password, user.password, (error, isMatch) => {
