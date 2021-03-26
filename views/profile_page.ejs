@@ -37,17 +37,8 @@
       <div class="card mt-5 pt-2 col-6 offset-3 border-0 shadow-sm">
         <div class="row g-0">
           <div class="col-md-4">
-            <img src="<%= profile_pic %>" style="width: 200px" alt="...">
-            <form
-            action="/users/upload-profile-pic"
-            method="POST"
-            enctype="multipart/form-data"
-            >
-            <input type="file" style="visibility: hidden;" name="profile_pic" id="profile_pic">
-            <label for="profile_pic" 
-            tyle="cursor:pointer;" class="btn-secondary btn-block p-2 rounded ">Change your profile pic</label> <br>
-            <button class="btn-success btn-block border p-2 rounded" type="submit">Save</button>
-          </form>
+           <button class="btn" data-bs-toggle="modal" data-bs-target="#update_picModal"><img src="<%= profile_pic %>" style="width: 200px"></button> 
+            
           </div>
            <div class="col-md-4">
             <div class="card-body">
@@ -58,11 +49,11 @@
             <br>
             <br>  
 
-              <p class="nav-item"> <button type="button" class="nav-link btn-secondary border-0 rounded" data-bs-toggle="modal" data-bs-target="#emailModal">Change email</button></p>
+              
            
-            </div>
+          </div>
 
-            <div class="col-md-4">
+          <div class="col-md-4 border-start">
               <div class="card-body">
                 <h6 class="card-title"> My channels</h6>
                 <p class= "card-text">
@@ -87,23 +78,37 @@
                     </ul>
               </div>        
             </div>
-       
+          
+            <button type="button" class="nav-link btn-secondary border-0 rounded align-self-end" data-bs-toggle="modal" data-bs-target="#update_userModal">Edit user info</button>
+        
       </div>
 
-      <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="update_userModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Change email</h5>
+              <h5 class="modal-title" id="exampleModalLabel">Edit user info</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <form action="/users/new-email" method="POST">
-                <label for="email">email</label>
-                <input type="text" name="email">
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-primary" >Save</button>
+
+              <form action="/users/update" method="POST">
+                <div class="mb-3">
+                  <label for="username" class="form-label">Username</label>
+                  <input type="text" class="form-control" id="username" name="username"value="<%= name %>">
+                
                 </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email address</label>
+                  <input type="email" class="form-control" id="email" name="email"value="<%= email %>">
+                
+                </div>
+                <div class="mb-3">
+                  <label for="password" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="password" name="password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save</button>
               </form>
             </div>
            
@@ -111,6 +116,33 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="update_picModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form
+            action="/users/upload-profile-pic"
+            method="POST"
+            enctype="multipart/form-data"
+            >
+            <input type="file" style="visibility: hidden;" name="profile_pic" id="profile_pic">
+            <label for="profile_pic" 
+            style="cursor:pointer;" class="col btn btn-outline-secondary p-2 m-1 rounded ">Change your profile pic</label> <br>
+            <button class="col btn btn-outline-success p-2 m-1 rounded" type="submit">Save</button>
+            </form>
+            
+          </div>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 
 
 

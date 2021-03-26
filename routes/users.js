@@ -75,7 +75,7 @@ router.post("/register", (req, res) => {
       name,
       email,
       password,
-      loggedin: false,
+      //loggedin: false,
     });
 
     bcrypt.hash(password, 10, function (error, hash) {
@@ -127,12 +127,13 @@ router.get('/me', ensureAuthenticated, async(req,res) => {
       let name = result.name
       let profile_pic = '.' + result.profile_pic
       let email = result.email
+      
       res.render('profile_page.ejs', {
         profile_pic: profile_pic, 
         email: email, 
         name:name,
         channels: channels,
-        dm: dm,
+        dm: dm    
       })
     }
     
@@ -161,15 +162,37 @@ router.post("/upload-profile-pic", (req, res) => {
   }
 });
 
-router.post("/new-email", (req, res) => {
-  User.findByIdAndUpdate(req.user._id,{email: req.body.email}, (error,result) => {
+router.post("/update", async (req, res) => {
+  
+  if (req.body.password !== ""){
+    
+    await bcrypt.hash(req.body.password, 10, function (error, hash) {
+      // Store hash in your password DB.
+      let password = hash;
+      console.log(password)
+    })
+    User.findByIdAndUpdate(req.user._id,{email: req.body.email, name:req.body.username, password:password}, (error,result) => {
+      if(error){
+        console.log(error)
+      }
+      else{
+        res.redirect('/users/me')
+      }
+    })
+    
+  }
+else{
+  console.log('hej')
+  User.findByIdAndUpdate(req.user._id,{email: req.body.email, name:req.body.username}, (error,result) => {
     if(error){
       console.log(error)
     }
     else{
-      res.redirect('/user/me')
+      res.redirect('/users/me')
     }
   })
+}
+
 });
 
 module.exports = router;
