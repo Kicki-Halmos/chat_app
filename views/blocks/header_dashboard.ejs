@@ -38,13 +38,14 @@
       <div class="row">
         <div class="col-2 fixed-top gx-0 border-end" style="padding-left: 10px; margin-top: 65px; height: 100%; z-index: 0;">
           <div>
-          <h4>Welcome <p id="user" title="<%= user._id%>" > <%= user.name %> </p></h4>
-          <img
+          <h4>Welcome <p id="user" title="<%= user._id%>"> <%= user.name %> </p></h4>
+          <button class="btn" data-bs-toggle="modal" data-bs-target="#update_picModal" style="outline :none; box-shadow: none"><img
           style=
           "width: 100px;
           height: 100px;
           object-fit: cover;"  class="rounded-circle" 
           src="<%=profile_pic%>" alt=""> 
+        </button>
 
         </div>
         <br>
@@ -74,6 +75,9 @@
 
      
         </div>
+
+
+       
        
     
  

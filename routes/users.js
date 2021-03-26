@@ -25,14 +25,6 @@ router.get("/register", (req, res) => {
 router.get("/logout", (req, res) => {
     let user = req.user
     console.log(user)
-    /*User.findByIdAndUpdate(user._id, {loggedin:false}, (error, result) => {
-        if(error){
-            console.log(error)
-        }
-        else{
-            
-        }
-    })*/
     req.logout();
     res.redirect("/");
 
@@ -74,8 +66,7 @@ router.post("/register", (req, res) => {
     const newUser = new User({
       name,
       email,
-      password,
-      //loggedin: false,
+      password
     });
 
     bcrypt.hash(password, 10, function (error, hash) {

@@ -16,10 +16,6 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    loggedin: {
-        type:Boolean,
-        defaultStatus: false},
-
     profile_pic: {
         type: String,
         default: "./public/img/Profile-Avatar"

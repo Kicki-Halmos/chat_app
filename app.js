@@ -73,10 +73,10 @@ app.use("/dashboard", require("./routes/dashboard"));
 
 //socket
 io.on("connection", (socket) => { 
-  console.log('socket connected')
+  
 
   socket.on("dashboard", (data) => {
-    console.log('dashboard connected')
+    
     const users = userJoin(socket.id, data.id, data.username);
     
     socket.join("dashboard");
@@ -84,7 +84,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on('private room', async (data)=>{ 
-    console.log(data)
+    
     const room_name = await data.room_name;
     const name = await data.name;
 
@@ -95,12 +95,12 @@ io.on("connection", (socket) => {
       const sender = user.name;
       const profile_pic = user.profile_pic;
       const user_data = formatMessage(user_message, sender, profile_pic);
-      //console.log(message)
+      
      PrivateChat.findOneAndUpdate({name: room_name}, {$push: {messages: [{date: user_data.time, message_sender: user._id, message:user_message}]}}, {useFindAndModify: false}, (error, result) => {
         if(error){
           console.log(error)
         }
-    // console.log('dm ' + result)
+    
      io.to(room_name).emit("private chat", (user_data))
       })
     })
