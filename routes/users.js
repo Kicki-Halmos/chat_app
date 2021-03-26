@@ -143,7 +143,7 @@ router.post("/upload-profile-pic", (req, res) => {
       let file_name = `./public/img/${id}`;
 
       profile_pic.mv(file_name);
-      User.findByIdAndUpdate(id, {profile_pic: file_name},() => res.redirect("/users/me"))
+      User.findByIdAndUpdate(id, {profile_pic: file_name},() => res.redirect("/dashboard"))
       
     } else {
       res.end("<h1> No file uploaded! </h1>");
@@ -153,6 +153,7 @@ router.post("/upload-profile-pic", (req, res) => {
   }
 });
 
+// update user info
 router.post("/update", async (req, res) => {
   
   if (req.body.password !== ""){
