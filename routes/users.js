@@ -23,11 +23,10 @@ router.get("/register", (req, res) => {
 
 //logout
 router.get("/logout", (req, res) => {
-    let user = req.user
-    console.log(user)
-    req.logout();
-    res.redirect("/");
-
+  let user = req.user;
+  console.log(user);
+  req.logout();
+  res.redirect("/");
 });
 
 //login
@@ -66,11 +65,10 @@ router.post("/register", (req, res) => {
     const newUser = new User({
       name,
       email,
-      password
+      password,
     });
 
     bcrypt.hash(password, 10, function (error, hash) {
-      // Store hash in your password DB.
       newUser.password = hash;
 
       newUser
@@ -85,7 +83,7 @@ router.post("/register", (req, res) => {
 });
 
 //me
-router.get('/me', ensureAuthenticated, async(req,res) => {
+router.get("/me", ensureAuthenticated, async (req, res) => {
   let channels = [];
   let dm = [];
   await PrivateChat.find((error, result) => {
@@ -93,12 +91,12 @@ router.get('/me', ensureAuthenticated, async(req,res) => {
       console.log(error);
     } else {
       for (item of result) {
-       let membersArray = item.members
-       //console.log(membersArray)
-       if(membersArray.includes(req.user.id)){
-        dm.push(item.name);
+        let membersArray = item.members;
+        //console.log(membersArray)
+        if (membersArray.includes(req.user.id)) {
+          dm.push(item.name);
+        }
       }
-    }
     }
   });
 
@@ -107,31 +105,27 @@ router.get('/me', ensureAuthenticated, async(req,res) => {
       console.log(error);
     } else {
       for (item of result) channels.push(item.name);
-    } 
+    }
   });
 
   await User.findById(req.user._id, (error, result) => {
-    if(error){
-      console.log(error)
-    }
-    else{
-      let name = result.name
-      let profile_pic = '.' + result.profile_pic
-      let email = result.email
-      
-      res.render('profile_page.ejs', {
-        profile_pic: profile_pic, 
-        email: email, 
-        name:name,
-        channels: channels,
-        dm: dm    
-      })
-    }
-    
-  
-  })
+    if (error) {
+      console.log(error);
+    } else {
+      let name = result.name;
+      let profile_pic = "." + result.profile_pic;
+      let email = result.email;
 
-})
+      res.render("profile_page.ejs", {
+        profile_pic: profile_pic,
+        email: email,
+        name: name,
+        channels: channels,
+        dm: dm,
+      });
+    }
+  });
+});
 
 //upload new profile pic
 router.post("/upload-profile-pic", (req, res) => {
@@ -143,8 +137,9 @@ router.post("/upload-profile-pic", (req, res) => {
       let file_name = `./public/img/${id}`;
 
       profile_pic.mv(file_name);
-      User.findByIdAndUpdate(id, {profile_pic: file_name},() => res.redirect("/dashboard"))
-      
+      User.findByIdAndUpdate(id, { profile_pic: file_name }, () =>
+        res.redirect("/dashboard")
+      );
     } else {
       res.end("<h1> No file uploaded! </h1>");
     }
@@ -155,36 +150,36 @@ router.post("/upload-profile-pic", (req, res) => {
 
 // update user info
 router.post("/update", async (req, res) => {
-  
-  if (req.body.password !== ""){
-    
+  if (req.body.password !== "") {
     await bcrypt.hash(req.body.password, 10, function (error, hash) {
-      // Store hash in your password DB.
       let password = hash;
-      console.log(password)
-    })
-    User.findByIdAndUpdate(req.user._id,{email: req.body.email, name:req.body.username, password:password}, (error,result) => {
-      if(error){
-        console.log(error)
+      console.log(password);
+    });
+    User.findByIdAndUpdate(
+      req.user._id,
+      { email: req.body.email, name: req.body.username, password: password },
+      (error, result) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.redirect("/users/me");
+        }
       }
-      else{
-        res.redirect('/users/me')
+    );
+  } else {
+    console.log("hej");
+    User.findByIdAndUpdate(
+      req.user._id,
+      { email: req.body.email, name: req.body.username },
+      (error, result) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.redirect("/users/me");
+        }
       }
-    })
-    
+    );
   }
-else{
-  console.log('hej')
-  User.findByIdAndUpdate(req.user._id,{email: req.body.email, name:req.body.username}, (error,result) => {
-    if(error){
-      console.log(error)
-    }
-    else{
-      res.redirect('/users/me')
-    }
-  })
-}
-
 });
 
 module.exports = router;
